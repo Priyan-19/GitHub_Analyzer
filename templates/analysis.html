@@ -1,348 +1,14 @@
 {{define "analysis.html"}}
-<style>
-  /* ── Analysis-specific styles ── */
-  .analysis-root { animation: fadeIn 0.35s ease; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
 
-  /* Profile header */
-  .profile-header {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px 32px;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-  .profile-avatar {
-    width: 80px; height: 80px; border-radius: 50%;
-    border: 2px solid var(--border);
-    flex-shrink: 0;
-  }
-  .profile-avatar-placeholder {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: var(--surface2);
-    border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem;
-    flex-shrink: 0;
-  }
-  .profile-info { flex: 1; min-width: 0; }
-  .profile-name {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.6rem; font-weight: 800;
-    color: var(--text); margin-bottom: 2px;
-  }
-  .profile-login {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem; color: var(--accent); margin-bottom: 8px;
-  }
-  .profile-bio { font-size: 0.88rem; color: var(--muted); margin-bottom: 10px; }
-  .profile-meta {
-    display: flex; flex-wrap: wrap; gap: 14px;
-    font-size: 0.78rem; color: var(--muted);
-  }
-  .profile-meta span { display: flex; align-items: center; gap: 5px; }
-  .profile-link {
-    margin-left: auto; align-self: flex-start;
-  }
-  .btn-gh {
-    display: inline-flex; align-items: center; gap: 7px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    text-decoration: none;
-    font-size: 0.8rem; font-weight: 500;
-    padding: 8px 14px; border-radius: 7px;
-    transition: border-color 0.15s;
-  }
-  .btn-gh:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Tags */
-  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-  .tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 5px 12px; border-radius: 20px;
-  }
-
-  /* Metric cards */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-  .metric-card {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 10px;
-    padding: 20px 18px;
-    position: relative;
-    overflow: hidden;
-  }
-  .metric-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: var(--accent2);
-  }
-  .metric-card.green::before { background: var(--green); }
-  .metric-card.yellow::before { background: var(--yellow); }
-  .metric-card.orange::before { background: var(--orange); }
-  .metric-card.red::before { background: var(--red); }
-
-  .metric-label {
-    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--muted); margin-bottom: 8px; font-weight: 500;
-  }
-  .metric-value {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.8rem; font-weight: 800; color: var(--text);
-    line-height: 1;
-  }
-  .metric-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
-
-  /* Two-col layout */
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  /* Panel */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 10px;
-    padding: 22px;
-  }
-  .panel-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.85rem; font-weight: 700;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.08em; margin-bottom: 16px;
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  /* Language bars */
-  .lang-item { margin-bottom: 14px; }
-  .lang-item:last-child { margin-bottom: 0; }
-  .lang-row {
-    display: flex; justify-content: space-between;
-    margin-bottom: 5px;
-  }
-  .lang-name {
-    font-size: 0.82rem; font-weight: 500;
-    display: flex; align-items: center; gap: 7px;
-  }
-  .lang-dot {
-    width: 9px; height: 9px; border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .lang-pct {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem; color: var(--muted);
-  }
-  .lang-bar-bg {
-    height: 5px; background: var(--border); border-radius: 3px; overflow: hidden;
-  }
-  .lang-bar-fill {
-    height: 100%; border-radius: 3px; transition: width 0.5s ease;
-  }
-
-  /* Spotlight repos */
-  .spotlight-repo {
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .spotlight-repo-name {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem; font-weight: 700; color: var(--accent);
-    text-decoration: none;
-  }
-  .spotlight-repo-name:hover { text-decoration: underline; }
-  .spotlight-repo-desc {
-    font-size: 0.8rem; color: var(--muted);
-  }
-  .repo-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-  .repo-chip {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem; color: var(--muted);
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    padding: 3px 9px; border-radius: 5px;
-    display: flex; align-items: center; gap: 5px;
-  }
-
-  /* Table */
-  .table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-  .table-header {
-    padding: 16px 22px;
-    border-bottom: 1px solid var(--border2);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.85rem; font-weight: 700;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.08em;
-    display: flex; align-items: center; gap: 8px;
-    justify-content: space-between;
-  }
-  .table-count {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem; font-weight: 400; color: var(--muted);
-    background: var(--surface2); border: 1px solid var(--border2);
-    padding: 2px 8px; border-radius: 10px; text-transform: none; letter-spacing: 0;
-  }
-  table {
-    width: 100%; border-collapse: collapse;
-  }
-  th {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem; font-weight: 500;
-    color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
-    padding: 10px 16px;
-    text-align: left;
-    border-bottom: 1px solid var(--border2);
-    white-space: nowrap;
-    background: var(--surface2);
-  }
-  td {
-    padding: 12px 16px;
-    font-size: 0.82rem;
-    border-bottom: 1px solid var(--border2);
-    vertical-align: middle;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(88,166,255,0.03); }
-
-  .td-repo-name {
-    font-weight: 600; color: var(--accent);
-    text-decoration: none; font-size: 0.83rem;
-  }
-  .td-repo-name:hover { text-decoration: underline; }
-  .td-desc { color: var(--muted); max-width: 260px; }
-  .td-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem; color: var(--text);
-    white-space: nowrap;
-  }
-  .td-lang {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.78rem; white-space: nowrap;
-  }
-  .score-pill {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem; font-weight: 500;
-    padding: 2px 8px; border-radius: 10px;
-    background: var(--surface2);
-  }
-  .date-cell {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem; color: var(--muted); white-space: nowrap;
-  }
-
-  /* ── Responsive Media Queries ── */
-
-  /* Medium Screens / Tablets (< 992px) */
-  @media (max-width: 992px) {
-    .metrics-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  /* Compact Desktop / Tablets (< 700px) */
-  @media (max-width: 700px) {
-    .hide-mobile { display: none; }
-  }
-
-  /* Tablets (< 680px) */
-  @media (max-width: 680px) {
-    .two-col {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-  }
-
-  /* Mobile Screens (< 600px) */
-  @media (max-width: 600px) {
-    .profile-header {
-      padding: 20px 16px;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 16px;
-    }
-    .profile-info {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-    .profile-meta {
-      justify-content: center;
-      gap: 10px;
-    }
-    .profile-link {
-      margin-left: 0;
-      align-self: center;
-      width: 100%;
-    }
-    .btn-gh {
-      width: 100%;
-      justify-content: center;
-    }
-    .tags {
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .panel {
-      padding: 16px;
-    }
-    th, td {
-      padding: 10px 10px;
-      font-size: 0.78rem;
-    }
-    .td-repo-name {
-      font-size: 0.78rem;
-    }
-    .table-header {
-      padding: 12px 16px;
-    }
-  }
-
-  /* Narrow Mobile Screens (< 550px) */
-  @media (max-width: 550px) {
-    .metrics-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .metric-card {
-      padding: 14px 12px;
-    }
-    .metric-value {
-      font-size: 1.4rem;
-    }
-  }
-</style>
 
 <div class="analysis-root">
 
   <!-- Profile Header -->
   <div class="profile-header">
     {{if .User.AvatarURL}}
-      <img class="profile-avatar" src="{{.User.AvatarURL}}" alt="{{.User.Login}}" loading="lazy" />
+    <img class="profile-avatar" src="{{.User.AvatarURL}}" alt="{{.User.Login}}" loading="lazy" />
     {{else}}
-      <div class="profile-avatar-placeholder">👤</div>
+    <div class="profile-avatar-placeholder">👤</div>
     {{end}}
 
     <div class="profile-info">
@@ -360,7 +26,8 @@
     <div class="profile-link">
       <a class="btn-gh" href="{{.User.HTMLURL}}" target="_blank" rel="noopener">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          <path
+            d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
         </svg>
         GitHub Profile
       </a>
@@ -447,7 +114,8 @@
             <span class="repo-chip">🔀 {{.MostPopularRepo.Forks}}</span>
             {{if .MostPopularRepo.Language}}
             <span class="repo-chip">
-              <span style="width:7px;height:7px;border-radius:50%;background:{{langColor .MostPopularRepo.Language}};display:inline-block;"></span>
+              <span
+                style="width:7px;height:7px;border-radius:50%;background:{{langColor .MostPopularRepo.Language}};display:inline-block;"></span>
               {{.MostPopularRepo.Language}}
             </span>
             {{end}}
@@ -468,7 +136,8 @@
             <span class="repo-chip">📅 {{formatDate .MostActiveRepo.UpdatedAt}}</span>
             {{if .MostActiveRepo.Language}}
             <span class="repo-chip">
-              <span style="width:7px;height:7px;border-radius:50%;background:{{langColor .MostActiveRepo.Language}};display:inline-block;"></span>
+              <span
+                style="width:7px;height:7px;border-radius:50%;background:{{langColor .MostActiveRepo.Language}};display:inline-block;"></span>
               {{.MostActiveRepo.Language}}
             </span>
             {{end}}
@@ -511,7 +180,8 @@
             <td>
               {{if .Language}}
               <div class="td-lang">
-                <span style="width:8px;height:8px;border-radius:50%;background:{{langColor .Language}};flex-shrink:0;"></span>
+                <span
+                  style="width:8px;height:8px;border-radius:50%;background:{{langColor .Language}};flex-shrink:0;"></span>
                 {{.Language}}
               </div>
               {{else}}<span style="color:var(--border)">—</span>{{end}}

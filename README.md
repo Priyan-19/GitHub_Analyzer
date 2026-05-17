@@ -4,7 +4,6 @@
 ### Intelligent Developer Insights & Profiling Platform ⚡📊
 
 [![Go](https://img.shields.io/badge/Go_1.21-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
-[![Vercel](https://img.shields.io/badge/Vercel_Serverless-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
 [![GitHub API](https://img.shields.io/badge/GitHub_API-181717?style=for-the-badge&logo=github)](https://docs.github.com/en/rest)
 
 **GitHub Developer Analyzer** is a high-performance analytics platform that transforms raw GitHub profile data into actionable insights. It evaluates developer activity, repository impact, and language usage to generate a comprehensive developer persona.
