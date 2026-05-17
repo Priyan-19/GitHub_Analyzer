@@ -1,0 +1,17 @@
+{{define "error.html"}}
+<div style="
+  max-width: 500px; margin: 40px auto;
+  background: var(--surface);
+  border: 1px solid #f85149;
+  border-radius: 10px;
+  padding: 28px 32px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+">
+  <div style="font-size: 2rem; margin-bottom: 12px;">⚠️</div>
+  <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:var(--text); margin-bottom:8px;">
+    Analysis Failed
+  </div>
+  <div style="font-size:0.85rem; color:var(--muted);">{{.}}</div>
+</div>
+{{end}}
