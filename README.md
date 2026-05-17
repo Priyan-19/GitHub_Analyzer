@@ -2,6 +2,8 @@
 
 A Go-based web application that analyzes a GitHub user's profile and repositories to provide insights into their activity, most used languages, and developer "persona".
 
+This project is fully structured for modern production hosting on platforms like **Vercel** as a serverless function, while remaining easy to run and test locally.
+
 ## 🚀 Features
 
 - **Profile Overview**: Fetches user metadata (followers, following, public repos, etc.).
@@ -9,20 +11,27 @@ A Go-based web application that analyzes a GitHub user's profile and repositorie
 - **Language Breakdown**: Calculates the top 5 programming languages used by the user.
 - **Activity Scoring**: Custom algorithm to rank repositories by recency and popularity.
 - **Developer Persona**: Assigns "Insight Tags" based on developer stats (e.g., "High Impact Developer", "GitHub Veteran").
-- **Responsive UI**: Clean, modern dashboard built with HTML templates and CSS.
+- **Responsive UI**: Clean, modern dashboard built with HTML templates and CSS with optimized, precise spacings.
+- **Asset Embedding**: Uses Go `embed` to package static assets and templates into a single distributable binary, enabling seamless serverless hosting.
 
 ## 🛠️ Project Structure
 
 ```text
 github-developer-analyzer/
-├── handlers/          # HTTP request handlers
-├── models/            # Data structures and domain models
-├── services/          # Business logic (GitHub API, Analytics)
-├── static/            # Static assets (CSS, JS, Images)
-├── templates/         # HTML templates
-├── .gitignore         # Standard Go git ignore rules
-├── go.mod             # Go module definition
-└── main.go            # Application entry point
+├── api/
+│   └── index.go          # Vercel serverless function entrypoint
+├── cmd/
+│   └── server/
+│       └── main.go       # Local execution entrypoint (main package)
+├── handlers/              # HTTP request handlers
+├── models/                # Data structures and domain models
+├── services/              # Business logic (GitHub API, Analytics)
+├── static/                # Static assets (CSS, JS, Images)
+├── templates/             # HTML templates
+├── .gitignore             # Standard Go git ignore rules
+├── app.go                 # Core app package (analyzer) using go:embed
+├── go.mod                 # Go module definition
+└── vercel.json            # Vercel deployment routing configuration
 ```
 
 ## 📋 Prerequisites
@@ -39,33 +48,41 @@ github-developer-analyzer/
    go mod tidy
    ```
 
-## 🏃 Running the Application
+## 🏃 Running Locally
 
-To start the server, run:
+To start the local development server, run:
 ```bash
-go run main.go
+go run cmd/server/main.go
 ```
 The application will be available at `http://localhost:8080`.
 
-## ⚙️ Configuration
-
-By default, the server runs on port `8080`. You can change this by setting the `PORT` environment variable:
+To change the default port, set the `PORT` environment variable:
 ```bash
 # Windows (PowerShell)
-$env:PORT="9000"; go run main.go
+$env:PORT="9000"; go run cmd/server/main.go
 
 # Windows (Command Prompt)
-set PORT=9000 && go run main.go
+set PORT=9000 && go run cmd/server/main.go
 
 # Linux/macOS
-PORT=9000 go run main.go
+PORT=9000 go run cmd/server/main.go
 ```
+
+## ⚡ Vercel Deployment
+
+This project is pre-configured for zero-config serverless deployment to **Vercel**:
+
+1. Push this repository to **GitHub**.
+2. Go to your [Vercel Dashboard](https://vercel.com).
+3. Click **Add New...** and select **Project**.
+4. Import your repository.
+5. Click **Deploy**. Vercel will automatically read the `vercel.json` configuration, build the serverless Go function in `api/index.go`, package your static assets via `go:embed`, and host the app globally.
 
 ## 🛑 Rate Limiting Note
 
 This application currently uses unauthenticated requests to the GitHub API. 
 - **Unauthenticated requests**: 60 requests per hour.
-- If you encounter a "rate limit exceeded" error, please wait or consider adding authentication support in `services/github_service.go`.
+- If you encounter a "rate limit exceeded" error, please consider adding authentication support in `services/github_service.go`.
 
 ## 🤝 Contributing
 

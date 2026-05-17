@@ -6,6 +6,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GitHub Developer Analyzer</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
@@ -46,11 +47,36 @@
       color: var(--text);
       font-family: 'Plus Jakarta Sans', sans-serif;
       height: 100vh;
-      width: 100vw;
+      width: 100%;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+    }
+
+    body.has-results {
+      overflow-y: auto !important;
+      height: auto !important;
+    }
+
+    body.has-results .main-content {
+      justify-content: flex-start;
+      padding: 40px 24px;
+    }
+
+    @media (max-width: 768px) {
+      body.has-results .main-content {
+        padding: 24px 16px;
+      }
     }
 
     /* NAV */
@@ -68,6 +94,12 @@
       align-items: center;
       justify-content: space-between;
       padding: 14px 32px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-inner {
+        padding: 12px 16px;
+      }
     }
 
     .nav-logo {
@@ -109,6 +141,14 @@
       padding: 20px 24px;
     }
 
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 24px 16px;
+        gap: 24px;
+        justify-content: flex-start;
+      }
+    }
+
     /* HERO */
     .hero {
       max-width: 800px;
@@ -142,7 +182,7 @@
 
     .hero h1 {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-size: clamp(1.7rem, 6vw, 3.4rem);
       font-weight: 800;
       line-height: 1.1;
       color: var(--text);
@@ -157,6 +197,20 @@
       font-size: 1.05rem;
       max-width: 500px;
       font-weight: 300;
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        gap: 12px;
+      }
+      .hero p {
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+      .hero-eyebrow::before,
+      .hero-eyebrow::after {
+        width: 12px;
+      }
     }
 
     .hero form {
@@ -192,6 +246,7 @@
 
     .search-input {
       flex: 1;
+      min-width: 0; /* Prevents input from refusing to shrink in flexbox */
       background: transparent;
       border: none;
       outline: none;
@@ -217,6 +272,7 @@
       padding: 0 28px;
       transition: background 0.18s;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .search-btn:hover {
@@ -225,6 +281,20 @@
 
     .search-btn:active {
       transform: scale(0.98);
+    }
+
+    @media (max-width: 480px) {
+      .search-btn {
+        padding: 0 22px; /* Increased padding slightly for balanced spacing on mobile */
+        font-size: 0.88rem;
+      }
+      .search-input {
+        font-size: 0.88rem;
+        padding: 12px 0;
+      }
+      .search-wrap {
+        border-radius: 8px;
+      }
     }
 
     /* EXAMPLES */
@@ -320,6 +390,16 @@
       border: 1px solid var(--border2);
       border-radius: 10px;
       padding: 24px 20px;
+    }
+
+    @media (max-width: 600px) {
+      .features {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .feature-card {
+        padding: 16px;
+      }
     }
 
     .feature-icon {
@@ -436,22 +516,12 @@
   </footer>
 
   <script>
-
-
     // Show/hide features on results
     document.body.addEventListener('htmx:afterSwap', function (e) {
       const fs = document.getElementById('features-section');
       if (e.detail.target.id === 'results' && e.detail.target.innerHTML.trim()) {
         fs.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Re-enable scrolling for results
-        document.body.style.height = 'auto';
-
-        // Adjust main-content for scrolling view
-        const mc = document.querySelector('.main-content');
-        if (mc) {
-          mc.style.justifyContent = 'flex-start';
-          mc.style.padding = '40px 24px';
-        }
+        document.body.classList.add('has-results');
       }
     });
 
