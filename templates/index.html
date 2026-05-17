@@ -95,18 +95,29 @@
       border-radius: 20px;
     }
 
-    /* HERO */
-    .hero {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 40px 24px 10px;
-      text-align: center;
+    /* MAIN CONTENT */
+    .main-content {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 12px;
+      gap: 20px;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    /* HERO */
+    .hero {
+      max-width: 800px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
     }
 
     .hero-eyebrow {
@@ -115,7 +126,6 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 20px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -136,7 +146,6 @@
       font-weight: 800;
       line-height: 1.1;
       color: var(--text);
-      margin-bottom: 18px;
     }
 
     .hero h1 span {
@@ -147,8 +156,12 @@
       color: var(--muted);
       font-size: 1.05rem;
       max-width: 500px;
-      margin: 0 auto 32px;
       font-weight: 300;
+    }
+
+    .hero form {
+      width: 100%;
+      max-width: 580px;
     }
 
     /* SEARCH */
@@ -251,6 +264,11 @@
     #results {
       max-width: 1100px;
       margin: 0 auto;
+      width: 100%;
+    }
+
+    #results:empty {
+      display: none;
     }
 
     #results:not(:empty) {
@@ -290,7 +308,7 @@
     .features {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 0 24px 60px;
+      padding: 0 0 20px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
@@ -358,58 +376,60 @@
     </div>
   </nav>
 
-  <section class="hero">
-    <div class="hero-eyebrow">GitHub Intelligence Dashboard</div>
-    <h1>Analyze any <span>developer's</span><br>entire GitHub profile</h1>
-    <p>Enter a username to get a complete analysis across all public repositories — stars, languages, activity, and
-      insights.</p>
+  <main class="main-content">
+    <section class="hero">
+      <div class="hero-eyebrow">GitHub Intelligence Dashboard</div>
+      <h1>Analyze any <span>developer's</span><br>entire GitHub profile</h1>
+      <p>Enter a username to get a complete analysis across all public repositories — stars, languages, activity, and
+        insights.</p>
 
-    <form hx-get="/analyze-user" hx-target="#results" hx-swap="innerHTML" hx-indicator="#loading" autocomplete="off">
-      <div class="search-wrap">
-        <span class="search-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-          </svg>
-        </span>
-        <input class="search-input" type="text" name="username" id="username-input" placeholder="Priyan-19" required
-          maxlength="40" spellcheck="false" />
-        <button class="search-btn" type="submit">Analyze →</button>
+      <form hx-get="/analyze-user" hx-target="#results" hx-swap="innerHTML" hx-indicator="#loading" autocomplete="off">
+        <div class="search-wrap">
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+            </svg>
+          </span>
+          <input class="search-input" type="text" name="username" id="username-input" placeholder="Priyan-19" required
+            maxlength="40" spellcheck="false" />
+          <button class="search-btn" type="submit">Analyze →</button>
+        </div>
+      </form>
+
+
+    </section>
+
+    <div id="loading" class="loader-wrap" style="display:none">
+      <div class="loader"></div>
+      <div class="loader-text">Fetching repositories & computing analytics…</div>
+    </div>
+
+    <div id="results"></div>
+
+    <section class="features" id="features-section">
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Aggregated Metrics</h3>
+        <p>Total stars, forks, open issues and activity scores across every public repo.</p>
       </div>
-    </form>
-
-
-  </section>
-
-  <div id="loading" class="loader-wrap" style="display:none">
-    <div class="loader"></div>
-    <div class="loader-text">Fetching repositories & computing analytics…</div>
-  </div>
-
-  <div id="results"></div>
-
-  <section class="features" id="features-section">
-    <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <h3>Aggregated Metrics</h3>
-      <p>Total stars, forks, open issues and activity scores across every public repo.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🔤</div>
-      <h3>Language Breakdown</h3>
-      <p>See what languages the developer uses most, with visual percentage bars.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🏆</div>
-      <h3>Top Repositories</h3>
-      <p>Automatically surfaces the most popular and most recently active repos.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💡</div>
-      <h3>Developer Insights</h3>
-      <p>Smart tags derived from account history, follower count, and activity patterns.</p>
-    </div>
-  </section>
+      <div class="feature-card">
+        <div class="feature-icon">🔤</div>
+        <h3>Language Breakdown</h3>
+        <p>See what languages the developer uses most, with visual percentage bars.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <h3>Top Repositories</h3>
+        <p>Automatically surfaces the most popular and most recently active repos.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💡</div>
+        <h3>Developer Insights</h3>
+        <p>Smart tags derived from account history, follower count, and activity patterns.</p>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
     Built with Go + HTMX · Data from <a href="https://api.github.com" target="_blank">GitHub REST API</a>
@@ -425,6 +445,13 @@
         fs.style.display = 'none';
         document.body.style.overflow = 'auto'; // Re-enable scrolling for results
         document.body.style.height = 'auto';
+
+        // Adjust main-content for scrolling view
+        const mc = document.querySelector('.main-content');
+        if (mc) {
+          mc.style.justifyContent = 'flex-start';
+          mc.style.padding = '40px 24px';
+        }
       }
     });
 
