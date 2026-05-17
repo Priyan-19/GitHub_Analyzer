@@ -1,25 +1,27 @@
-package main
+package analyzer
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github-developer-analyzer/handlers"
 	"github-developer-analyzer/services"
 )
 
-func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+//go:embed templates/*
+var templatesFS embed.FS
 
-	tmpl, err := template.New("").Funcs(templateFuncs()).ParseGlob(filepath.Join("templates", "*.html"))
+//go:embed static/*
+var staticFS embed.FS
+
+// App exposes the main handler for Vercel or local server
+func App() http.Handler {
+	tmpl, err := template.New("").Funcs(templateFuncs()).ParseFS(templatesFS, "templates/*.html")
 	if err != nil {
 		log.Fatalf("failed to parse templates: %v", err)
 	}
@@ -29,7 +31,10 @@ func main() {
 	analyzeHandler := handlers.NewAnalyzeHandler(githubSvc, analyticsSvc, tmpl)
 
 	mux := http.NewServeMux()
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	
+	// Serve static files
+	staticSubFS, _ := fs.Sub(staticFS, "static")
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticSubFS))))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
@@ -45,18 +50,7 @@ func main() {
 
 	mux.Handle("/analyze-user", analyzeHandler)
 
-	srv := &http.Server{
-		Addr:         ":" + port,
-		Handler:      mux,
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 60 * time.Second,
-		IdleTimeout:  120 * time.Second,
-	}
-
-	log.Printf("GitHub Developer Analyzer running at http://localhost:%s", port)
-	if err := srv.ListenAndServe(); err != nil {
-		log.Fatalf("server error: %v", err)
-	}
+	return mux
 }
 
 func templateFuncs() template.FuncMap {
